@@ -1,0 +1,445 @@
+type Presentation {
+  id: ID!
+  description: String
+  presenter: UserProfile!
+  startDateTime: AWSDateTime
+  frontClipURL: String
+  title: String!
+  clips(filter: ModelClipFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelClipConnection
+  watchers(filter: ModelWatcherFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelWatcherConnection
+}
+
+type Clip {
+  id: ID!
+  CaptureDateTime: AWSDateTime!
+  ClipThumbnailURL: String
+  ClipURL: String!
+  presentation: Presentation!
+  Bookmarks(filter: ModelBookmarkFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelBookmarkConnection
+}
+
+type Watcher {
+  id: ID!
+  joinedAT: AWSDateTime!
+  user: UserProfile!
+  presentationWatched: Presentation!
+  bookmarks(filter: ModelBookmarkFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelBookmarkConnection
+  comments(filter: ModelCommentFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelCommentConnection
+  title: String
+  frontClipURL: String
+  presentationId: ID!
+}
+
+type Bookmark {
+  id: ID!
+  kind: String
+  watcher: Watcher!
+  clip: Clip!
+}
+
+type Comment {
+  id: ID!
+  content: String
+  taggedClip: Clip
+  watcher: Watcher!
+}
+
+type UserProfile {
+  id: ID!
+  userName: String!
+  firstName: String
+  lastName: String
+  biography: String
+  followers: Int
+  following: Int
+  interests: String
+  location: String
+  image: String
+  presentationsPresented(filter: ModelPresentationFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelPresentationConnection
+  presentationsWatched(filter: ModelWatcherFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelWatcherConnection
+}
+
+type SearchCode {
+  id: ID!
+  expiresAT: String!
+  presentationId: String!
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelPresentationConnection {
+  items: [Presentation]
+  nextToken: String
+}
+
+input ModelStringFilterInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+}
+
+input ModelIDFilterInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+}
+
+input ModelIntFilterInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  contains: Int
+  notContains: Int
+  between: [Int]
+}
+
+input ModelFloatFilterInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  contains: Float
+  notContains: Float
+  between: [Float]
+}
+
+input ModelBooleanFilterInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelPresentationFilterInput {
+  id: ModelIDFilterInput
+  description: ModelStringFilterInput
+  startDateTime: ModelStringFilterInput
+  frontClipURL: ModelStringFilterInput
+  title: ModelStringFilterInput
+  and: [ModelPresentationFilterInput]
+  or: [ModelPresentationFilterInput]
+  not: ModelPresentationFilterInput
+}
+
+type Query {
+  getPresentation(id: ID!): Presentation
+  listPresentations(filter: ModelPresentationFilterInput, limit: Int, nextToken: String): ModelPresentationConnection
+  getClip(id: ID!): Clip
+  listClips(filter: ModelClipFilterInput, limit: Int, nextToken: String): ModelClipConnection
+  getWatcher(id: ID!): Watcher
+  listWatchers(filter: ModelWatcherFilterInput, limit: Int, nextToken: String): ModelWatcherConnection
+  getBookmark(id: ID!): Bookmark
+  listBookmarks(filter: ModelBookmarkFilterInput, limit: Int, nextToken: String): ModelBookmarkConnection
+  getComment(id: ID!): Comment
+  listComments(filter: ModelCommentFilterInput, limit: Int, nextToken: String): ModelCommentConnection
+  getUserProfile(id: ID!): UserProfile
+  listUserProfiles(filter: ModelUserProfileFilterInput, limit: Int, nextToken: String): ModelUserProfileConnection
+  getSearchCode(id: ID!): SearchCode
+  listSearchCodes(filter: ModelSearchCodeFilterInput, limit: Int, nextToken: String): ModelSearchCodeConnection
+}
+
+input CreatePresentationInput {
+  id: ID
+  description: String
+  startDateTime: AWSDateTime
+  frontClipURL: String
+  title: String!
+  presentationPresenterId: ID!
+}
+
+input UpdatePresentationInput {
+  id: ID!
+  description: String
+  startDateTime: AWSDateTime
+  frontClipURL: String
+  title: String
+  presentationPresenterId: ID
+}
+
+input DeletePresentationInput {
+  id: ID
+}
+
+type Mutation {
+  createPresentation(input: CreatePresentationInput!): Presentation
+  updatePresentation(input: UpdatePresentationInput!): Presentation
+  deletePresentation(input: DeletePresentationInput!): Presentation
+  createClip(input: CreateClipInput!): Clip
+  updateClip(input: UpdateClipInput!): Clip
+  deleteClip(input: DeleteClipInput!): Clip
+  createWatcher(input: CreateWatcherInput!): Watcher
+  updateWatcher(input: UpdateWatcherInput!): Watcher
+  deleteWatcher(input: DeleteWatcherInput!): Watcher
+  createBookmark(input: CreateBookmarkInput!): Bookmark
+  updateBookmark(input: UpdateBookmarkInput!): Bookmark
+  deleteBookmark(input: DeleteBookmarkInput!): Bookmark
+  createComment(input: CreateCommentInput!): Comment
+  updateComment(input: UpdateCommentInput!): Comment
+  deleteComment(input: DeleteCommentInput!): Comment
+  createUserProfile(input: CreateUserProfileInput!): UserProfile
+  updateUserProfile(input: UpdateUserProfileInput!): UserProfile
+  deleteUserProfile(input: DeleteUserProfileInput!): UserProfile
+  createSearchCode(input: CreateSearchCodeInput!): SearchCode
+  updateSearchCode(input: UpdateSearchCodeInput!): SearchCode
+  deleteSearchCode(input: DeleteSearchCodeInput!): SearchCode
+}
+
+type Subscription {
+  onCreatePresentation: Presentation @aws_subscribe(mutations: ["createPresentation"])
+  onUpdatePresentation: Presentation @aws_subscribe(mutations: ["updatePresentation"])
+  onDeletePresentation: Presentation @aws_subscribe(mutations: ["deletePresentation"])
+  onCreateClip: Clip @aws_subscribe(mutations: ["createClip"])
+  onUpdateClip: Clip @aws_subscribe(mutations: ["updateClip"])
+  onDeleteClip: Clip @aws_subscribe(mutations: ["deleteClip"])
+  onCreateWatcher: Watcher @aws_subscribe(mutations: ["createWatcher"])
+  onUpdateWatcher: Watcher @aws_subscribe(mutations: ["updateWatcher"])
+  onDeleteWatcher: Watcher @aws_subscribe(mutations: ["deleteWatcher"])
+  onCreateBookmark: Bookmark @aws_subscribe(mutations: ["createBookmark"])
+  onUpdateBookmark: Bookmark @aws_subscribe(mutations: ["updateBookmark"])
+  onDeleteBookmark: Bookmark @aws_subscribe(mutations: ["deleteBookmark"])
+  onCreateComment: Comment @aws_subscribe(mutations: ["createComment"])
+  onUpdateComment: Comment @aws_subscribe(mutations: ["updateComment"])
+  onDeleteComment: Comment @aws_subscribe(mutations: ["deleteComment"])
+  onCreateUserProfile: UserProfile @aws_subscribe(mutations: ["createUserProfile"])
+  onUpdateUserProfile: UserProfile @aws_subscribe(mutations: ["updateUserProfile"])
+  onDeleteUserProfile: UserProfile @aws_subscribe(mutations: ["deleteUserProfile"])
+  onCreateSearchCode: SearchCode @aws_subscribe(mutations: ["createSearchCode"])
+  onUpdateSearchCode: SearchCode @aws_subscribe(mutations: ["updateSearchCode"])
+  onDeleteSearchCode: SearchCode @aws_subscribe(mutations: ["deleteSearchCode"])
+}
+
+type ModelClipConnection {
+  items: [Clip]
+  nextToken: String
+}
+
+input ModelClipFilterInput {
+  id: ModelIDFilterInput
+  CaptureDateTime: ModelStringFilterInput
+  ClipThumbnailURL: ModelStringFilterInput
+  ClipURL: ModelStringFilterInput
+  and: [ModelClipFilterInput]
+  or: [ModelClipFilterInput]
+  not: ModelClipFilterInput
+}
+
+input CreateClipInput {
+  id: ID
+  CaptureDateTime: AWSDateTime!
+  ClipThumbnailURL: String
+  ClipURL: String!
+  clipPresentationId: ID!
+}
+
+input UpdateClipInput {
+  id: ID!
+  CaptureDateTime: AWSDateTime
+  ClipThumbnailURL: String
+  ClipURL: String
+  clipPresentationId: ID
+}
+
+input DeleteClipInput {
+  id: ID
+}
+
+type ModelWatcherConnection {
+  items: [Watcher]
+  nextToken: String
+}
+
+input ModelWatcherFilterInput {
+  id: ModelIDFilterInput
+  joinedAT: ModelStringFilterInput
+  title: ModelStringFilterInput
+  frontClipURL: ModelStringFilterInput
+  presentationId: ModelIDFilterInput
+  and: [ModelWatcherFilterInput]
+  or: [ModelWatcherFilterInput]
+  not: ModelWatcherFilterInput
+}
+
+input CreateWatcherInput {
+  id: ID
+  joinedAT: AWSDateTime!
+  title: String
+  frontClipURL: String
+  presentationId: ID!
+  watcherUserId: ID!
+  watcherPresentationWatchedId: ID!
+}
+
+input UpdateWatcherInput {
+  id: ID!
+  joinedAT: AWSDateTime
+  title: String
+  frontClipURL: String
+  presentationId: ID
+  watcherUserId: ID
+  watcherPresentationWatchedId: ID
+}
+
+input DeleteWatcherInput {
+  id: ID
+}
+
+type ModelBookmarkConnection {
+  items: [Bookmark]
+  nextToken: String
+}
+
+input ModelBookmarkFilterInput {
+  id: ModelIDFilterInput
+  kind: ModelStringFilterInput
+  and: [ModelBookmarkFilterInput]
+  or: [ModelBookmarkFilterInput]
+  not: ModelBookmarkFilterInput
+}
+
+input CreateBookmarkInput {
+  id: ID
+  kind: String
+  bookmarkWatcherId: ID!
+  bookmarkClipId: ID!
+}
+
+input UpdateBookmarkInput {
+  id: ID!
+  kind: String
+  bookmarkWatcherId: ID
+  bookmarkClipId: ID
+}
+
+input DeleteBookmarkInput {
+  id: ID
+}
+
+type ModelCommentConnection {
+  items: [Comment]
+  nextToken: String
+}
+
+input ModelCommentFilterInput {
+  id: ModelIDFilterInput
+  content: ModelStringFilterInput
+  and: [ModelCommentFilterInput]
+  or: [ModelCommentFilterInput]
+  not: ModelCommentFilterInput
+}
+
+input CreateCommentInput {
+  id: ID
+  content: String
+  commentWatcherId: ID!
+}
+
+input UpdateCommentInput {
+  id: ID!
+  content: String
+  commentWatcherId: ID
+}
+
+input DeleteCommentInput {
+  id: ID
+}
+
+type ModelUserProfileConnection {
+  items: [UserProfile]
+  nextToken: String
+}
+
+input ModelUserProfileFilterInput {
+  id: ModelIDFilterInput
+  userName: ModelStringFilterInput
+  firstName: ModelStringFilterInput
+  lastName: ModelStringFilterInput
+  biography: ModelStringFilterInput
+  followers: ModelIntFilterInput
+  following: ModelIntFilterInput
+  interests: ModelStringFilterInput
+  location: ModelStringFilterInput
+  image: ModelStringFilterInput
+  and: [ModelUserProfileFilterInput]
+  or: [ModelUserProfileFilterInput]
+  not: ModelUserProfileFilterInput
+}
+
+input CreateUserProfileInput {
+  id: ID
+  userName: String!
+  firstName: String
+  lastName: String
+  biography: String
+  followers: Int
+  following: Int
+  interests: String
+  location: String
+  image: String
+}
+
+input UpdateUserProfileInput {
+  id: ID!
+  userName: String
+  firstName: String
+  lastName: String
+  biography: String
+  followers: Int
+  following: Int
+  interests: String
+  location: String
+  image: String
+}
+
+input DeleteUserProfileInput {
+  id: ID
+}
+
+type ModelSearchCodeConnection {
+  items: [SearchCode]
+  nextToken: String
+}
+
+input ModelSearchCodeFilterInput {
+  id: ModelIDFilterInput
+  expiresAT: ModelStringFilterInput
+  presentationId: ModelStringFilterInput
+  and: [ModelSearchCodeFilterInput]
+  or: [ModelSearchCodeFilterInput]
+  not: ModelSearchCodeFilterInput
+}
+
+input CreateSearchCodeInput {
+  id: ID
+  expiresAT: String!
+  presentationId: String!
+}
+
+input UpdateSearchCodeInput {
+  id: ID!
+  expiresAT: String
+  presentationId: String
+}
+
+input DeleteSearchCodeInput {
+  id: ID
+}

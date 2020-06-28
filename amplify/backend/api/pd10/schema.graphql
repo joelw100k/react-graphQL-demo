@@ -1,0 +1,85 @@
+type Presentation 
+   @model
+{
+  id: ID! 
+  description: String
+  presenter: UserProfile! @connection(name:"PresentingUser")
+  startDateTime: AWSDateTime
+  frontClipURL: String
+  title: String!
+  clips: [Clip] @connection(name:"PresentationClips")
+  watchers: [Watcher] @connection(name:"PresentationWatcher")
+}
+
+type Clip 
+   @model
+{
+  id: ID! 
+  CaptureDateTime: AWSDateTime!
+  ClipThumbnailURL: String
+  ClipURL: String!
+  presentation: Presentation! @connection(name:"PresentationClips")
+  Bookmarks: [Bookmark] @connection(name:"ClipBookmarks")
+}
+
+## A watcher class is used as an alias for user who watches a presentation.
+## We only refer directly to user when he is the presenter
+type Watcher 
+   @model
+{
+  id: ID!
+  joinedAT: AWSDateTime! 
+  user: UserProfile! @connection(name:"WatchingUser") 
+  presentationWatched : Presentation! @connection(name:"PresentationWatcher")
+  bookmarks: [Bookmark] @connection(name:"WatcherBookmarks")
+  comments: [Comment] @connection(name:"WatcherComments")
+  #copied/denormalized from Presentation for ease of programmatic access
+  title: String
+  frontClipURL: String 
+  presentationId: ID!
+}
+
+## ClipWatched records only clips user was interested in, (commented on?), bookmarked, etc..
+## Unsure yet if we may allow multiple entries per same slide for user 
+type Bookmark
+   @model
+{
+  id: ID!
+  kind: String
+  watcher : Watcher! @connection(name:"WatcherBookmarks")
+  clip: Clip! @connection(name:"ClipBookmarks")
+}
+
+type Comment
+  @model
+{
+  id: ID!
+  content: String
+  taggedClip: Clip #optional, may want to have a link in comment to know it was made on which clip or clipWatched
+  watcher: Watcher! @connection(name:"WatcherComments")
+}
+
+type UserProfile 
+   @model  
+{
+  id: ID!
+  userName: String!  
+  firstName: String 
+  lastName: String
+  biography: String
+  followers: Int
+  following: Int
+  interests: String
+  location: String  
+  image: String
+  presentationsPresented: [Presentation] @connection(name:"PresentingUser")
+  presentationsWatched: [Watcher] @connection(name:"WatchingUser")
+}
+
+type SearchCode 
+  @model
+{
+  id:ID!
+  expiresAT: String!
+  presentationId: String!
+}

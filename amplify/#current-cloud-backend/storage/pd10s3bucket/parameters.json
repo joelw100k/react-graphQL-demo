@@ -1,0 +1,9 @@
+{
+    "bucketName": "pd10s3bucket",
+    "authPolicyName": "s3_amplify_d36a6a9d",
+    "unauthPolicyName": "s3_amplify_d36a6a9d",
+    "authRoleName": "pd10-20181109204204-authRole",
+    "unauthRoleName": "pd10-20181109204204-unauthRole",
+    "authPermissions": "rw",
+    "unauthPermissions": "r"
+}

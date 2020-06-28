@@ -1,0 +1,13 @@
+{
+    "AppSyncApiName": "pd10",
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authcognitopd10",
+            "Outputs.UserPoolId"
+        ]
+    },
+    "schemaGraphql": "s3://pd10-20181109204204-deployment/amplify-appsync-files/schema.graphql.1543193392948",
+    "ResolverBucket": "pd10-20181109204204-deployment",
+    "ResolverRootKey": "amplify-appsync-files",
+    "DeploymentTimestamp": "1543193392948"
+}
